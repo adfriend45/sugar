@@ -7,7 +7,7 @@ real, parameter :: dt     = 1.0                  ! Timestep                     
 real, parameter :: k_Ca   = 0.00563              ! For future CO2                                      (-)
 real, parameter :: a      = 0.1502               ! Allometry constant for mass from diameter (kg[DM] cm-1)
 real, parameter :: b      = 2.476                ! Allometry constant for mass from diamter            (-)
-real, parameter :: KS_def = 0.0288               ! Neutral CO2 concentraiton               (g[Su] g[DM]-1)
+real, parameter :: KS_def = 0.0288               ! Neutral CO2 concentration               (g[Su] g[DM]-1)
 real, parameter :: n      = 4                    ! Hill coefficient                                    (-)
 real, parameter :: alpha  = 2.0 * 0.0089 / 365.0 ! Source capacity            (kg[Su] cm[sapwood]-2 day-1)
 real, parameter :: beta   = 2.0 * 0.329 / 365.0  ! Sink capacity                                (cm day-1)
@@ -84,7 +84,7 @@ if (sim == 5) then ! Full default model.
   calib_G = one
   calib_A = one
 endif
-if (sim == 6) then ! Sc = KS
+if (sim == 6) then ! Sc = KS (i.e. no feedbacks)
   open (21,file='o6.txt',status='unknown')
   calib_G = 0.4 / (2.0 * 0.329)
   calib_A = one
@@ -100,36 +100,38 @@ if (sim == 8) then ! Source-driven growth
   calib_G = one
   calib_A = 1.36
 end if
-if (sim == 9) then
+if (sim == 9) then ! Fixed CO2 and source-driven growth
   open (21,file='o9.txt',status='unknown')
   calib_G = one
   calib_A = 1.36
   ca_it (:) = ca (1700)
 end if
+! Set KS
 KS = KS_def
-if (sim == 10) then
+if (sim == 10) then ! Increase KS by 20%
   open (21,file='o10.txt',status='unknown')
   calib_G = 1.75
   calib_A = 0.84
   KS = 1.2 * KS_def
 end if
-if (sim == 11) then
+if (sim == 11) then ! Increase KS by 20% and fix CO2
   open (21,file='o11.txt',status='unknown')
   calib_G = 1.75
   calib_A = 0.84
   KS = 1.2 * KS_def
   ca_it (:) = ca (1700)
 end if
-if (sim == 12) then
+if (sim == 12) then ! Halve source capacity from 2000 CE
   open (21,file='o12.txt',status='unknown')
   calib_G = one
   calib_A = one
 end if
-if (sim == 13) then
+if (sim == 13) then ! Halve sink capacity from 2000 CE
   open (21,file='o13.txt',status='unknown')
   calib_G = one
   calib_A = one
 end if
+! Initial diameter (cm)
 D = 0.1
 M = a * D ** b
 S = KS * M
