@@ -17,10 +17,11 @@ integer, parameter :: sim = 5                    ! Simulation version           
 end module params
 
 module vars
+! Declare model variables.
 use params
 implicit none
-real, dimension (nyr_co2) :: ca, ca_ssp
-real, dimension (nyr_co2*365*nt) :: ca_it
+real, dimension (nyr_co2) :: ca, ca_ssp   ! Mean annual atmospheric CO2 mixing ratio  (ppm)
+real, dimension (nyr_co2*365*nt) :: ca_it ! Mean atmospheric CO2 mixing ratio at model timestep (ppm)
 real :: ca0, ca1, ac, bc, D, M, S, dM, gG, fa, U, gA, fi, Sc, dS
 real :: dS1, dS2, dS3, dS4, dM1, dM2, dM3, dM4, calib_G, calib_A
 real :: KS
