@@ -9,7 +9,7 @@ real, parameter :: a      = 0.1502               ! Allometry constant for mass f
 real, parameter :: b      = 2.476                ! Allometry constant for mass from diamter            (-)
 real, parameter :: KS_def = 0.0288               ! Neutral CO2 concentration               (g[Su] g[DM]-1)
 real, parameter :: n      = 4                    ! Hill coefficient                                    (-)
-real, parameter :: alpha  = 2.0 * 0.0089 / 365.0 ! Source capacity            (kg[Su] cm[sapwood]-2 day-1)
+real, parameter :: alpha  = 2.0 * 0.0089 / 365.0 ! Source capacity             (kg[C] cm[sapwood]-2 day-1)
 real, parameter :: beta   = 2.0 * 0.329 / 365.0  ! Sink capacity                                (cm day-1)
 integer, parameter :: nyr_co2 = 2101             ! Size of CO2 concentration array                     (n)
 integer, parameter :: nt = nint (1.0 / dt)       ! No. timesteps in day                                (n)
@@ -133,22 +133,31 @@ if (sim == 13) then ! Halve sink capacity from 2000 CE
 end if
 ! Initial diameter (cm)
 D = 0.1
+! Initial strutural mass (kg[DM])
 M = a * D ** b
+! Initial sucrose mass (kg[Su])
 S = KS * M
+! Growth control by environmental factors (scalar)
 gG = one
+! Initial inhibition feedback (scalar)
 fi = 0.5
+! Initial activation feedback (scalar)
 fa = 0.5
+! Initial index for dt CO2 array (n)
 j = 1699*365*nt + 1
+! Loop over years for model integration
 do kyr = 1700, 2100
-  !****adf
+  ! Set tree to germinate in 1801 (change for FACE experiments)
   if (kyr == 1801) then
     D = 0.1
     M = a * D ** b
     S = KS * M
   end if
-  if (kyr == 2000) ca_it = ca_it + 165.0 !****adf
-  !****adf
+  ! Add CO2 for FACE experiments
+  !if (kyr == 2000) ca_it = ca_it + 165.0
+  ! Loop over days in year
   do kday = 1, 365
+    ! Loop over timesteps in day
     do it = 1, nt
       if ((sim == 12) .and. (kyr >= 2000)) then
         gA = fC (ca_it (j)) / 2.0
@@ -160,6 +169,7 @@ do kyr = 1700, 2100
       else
         gG = gG
       end if
+      ! Compute change in M and S using RK4
       call grow (M        , S        , dS1,dM1)
       call grow (M+dM1/2.0, S+dS1/2.0, dS2,dM2)
       call grow (M+dM2/2.0, S+dS2/2.0, dS3,dM3)
@@ -173,9 +183,13 @@ do kyr = 1700, 2100
       else
         Sc = S / M
       end if
+      ! Inibition factor for diagnostics
       fi = KS ** n / (KS ** n + Sc ** n)
+      ! Activation factor for diagnostics
       fa = Sc ** n / (KS ** n + Sc ** n)
+      ! New diameter at end of timestep for diagnostics
       D = (M / a) ** (1.0 / b)
+      ! New net assimilation rate at end of timestep, for diagnostics
       U = gA * fi * calib_A * alpha * pi * (D / 2.0) ** 2
       if ((sim == 8) .or. (sim == 9)) dM = U / 0.474
       write (20,*) j, ca_it (j)
@@ -193,6 +207,7 @@ close (21)
 
 contains
 function fC (Ca)
+! Compute CO2 effect on source activity
 implicit none
 real, parameter :: KC = 400.0
 real :: fC, Ca, Ci
@@ -204,19 +219,26 @@ end function fC
 end program sugar
 
 subroutine grow (Mg, Sg, dSg, dMg)
+! Compute rates of change in structural mass and sucrose mass
 use params
 use vars
 implicit none
 real :: Mg, Sg, dSg, dMg, Ug, Dg
+! Diagnose diameter from structural mass
 Dg = (Mg / a) ** (1.0 / b)
+! Diagnose sucrose concentration
 if ((sim == 6) .or. (sim == 8) .or. (sim == 9)) then
   Sc = KS
 else
   Sc = Sg / Mg
 end if
+! Inhibition factor
 fi = KS ** n / (KS ** n + Sc ** n)
+! Activation factor
 fa = Sc ** n / (KS ** n + Sc ** n)
+! Source activity (kg[C] tree-1 day-1)
 Ug = gA * fi * calib_A * alpha * pi * (Dg / 2.0) ** 2
+! Sink activity (kg[DM] tree-1 day-1)
 dMg = gG * fa * calib_G * beta * (a * b) * Dg ** (b - one)
 if ((sim == 8).or. (sim == 9)) dMg = Ug / 0.474
 dSg = (Ug - 0.474 * dMg) / 0.421
