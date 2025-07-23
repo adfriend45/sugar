@@ -34,28 +34,33 @@ use vars
 implicit none
 write (*,*) alpha*365.0,beta*365.0
 !stop
+! Read annual mean CO2 mixing ratios, 1700-2023 CE (ppm)
 open (10,file='global_co2_ann_1700_2023.txt',status='old')
 do kyr = 1700, 2023
   read (10,*) iyr, ca (kyr)
 end do
 close (10)
+! Read annual mean CO2 mixing ratios, 1850-2100 CE (ppm)
 open (10,file='ssp585.txt',status='old')
 do kyr = 1850, 2100
   read (10,*) iyr, ca_ssp (kyr)
 end do
 close (10)
+! Use SSP585 CO2 for 2000-2100 CE.
 ca (2000:2100) = ca_ssp (2000:2100)
 ca (2101) = ca (2100) + (ca (2100) - ca (2099))
 !do kyr = 2024, nyr_co2
 !  ca (kyr) = ca (2023)* exp (k_Ca * (kyr-2023))
 !end do
+! For diagnostics of CO2.
 open (20,file='ca.txt',status='unknown')
 do kyr = 1700, nyr_co2
   write (20,*) kyr, ca (kyr)
 end do
 close (20)
-! Assume Ca is 1 jan.
+! Assume Ca is on 1 jan.
 j = 1699*365*nt + 1 !+ 182*nt
+! Compute CO2 on model timestep.
 do kyr = 1700, 2100
   ca0 = ca (kyr)
   ca1 = ca (kyr+1)
@@ -72,8 +77,9 @@ do kyr = 1700, 2100
   end do
   !stop
 end do
-! Now do integration.
+! For diagostic of CO2.
 open (20,file='ca_it.txt',status='unknown')
+! '5' is default simulation with full mode.
 if (sim == 5) then
   open (21,file='o5.txt',status='unknown')
   calib_G = one
