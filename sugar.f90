@@ -1,18 +1,19 @@
 module params
+! Defines model parameters.
 implicit none
 real, parameter :: one    = 1.0
 real, parameter :: pi     = 3.14159
-real, parameter :: dt     = 1.0     ! Timestep (days)
-real, parameter :: k_Ca   = 0.00563 ! For future CO2 (not used)
-real, parameter :: a      = 0.1502  ! Allometry constant for mass from diameter (kg[DM] cm-1)
-real, parameter :: b      = 2.476   ! Allometry constant for mass from diamter (-)
-real, parameter :: KS_def = 0.0288  ! Neutral CO2 concentraiton (g[Su] g[DM]-1)
-real, parameter :: n      = 4
-real, parameter :: alpha  = 2.0 * 0.0089 / 365.0
-real, parameter :: beta   = 2.0 * 0.329 / 365.0
-integer, parameter :: nyr_co2 = 2101
-integer, parameter :: nt = nint (1.0 / dt)
-integer, parameter :: sim = 5
+real, parameter :: dt     = 1.0                  ! Timestep                                         (days)
+real, parameter :: k_Ca   = 0.00563              ! For future CO2                                      (-)
+real, parameter :: a      = 0.1502               ! Allometry constant for mass from diameter (kg[DM] cm-1)
+real, parameter :: b      = 2.476                ! Allometry constant for mass from diamter            (-)
+real, parameter :: KS_def = 0.0288               ! Neutral CO2 concentraiton               (g[Su] g[DM]-1)
+real, parameter :: n      = 4                    ! Hill coefficient                                    (-)
+real, parameter :: alpha  = 2.0 * 0.0089 / 365.0 ! Source capacity            (kg[Su] cm[sapwood]-2 day-1)
+real, parameter :: beta   = 2.0 * 0.329 / 365.0  ! Sink capacity                                (cm day-1)
+integer, parameter :: nyr_co2 = 2101             ! Size of CO2 concentration array                     (n)
+integer, parameter :: nt = nint (1.0 / dt)       ! No. timesteps in day                                (n)
+integer, parameter :: sim = 5                    ! Simulation version                                  (n)
 end module params
 
 module vars
