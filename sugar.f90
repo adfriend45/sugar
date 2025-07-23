@@ -2,11 +2,11 @@ module params
 implicit none
 real, parameter :: one    = 1.0
 real, parameter :: pi     = 3.14159
-real, parameter :: dt     = 1.0
-real, parameter :: k_Ca   = 0.00563
-real, parameter :: a      = 0.1502
-real, parameter :: b      = 2.476
-real, parameter :: KS_def = 0.0288
+real, parameter :: dt     = 1.0     ! Timestep (days)
+real, parameter :: k_Ca   = 0.00563 ! For future CO2 (not used)
+real, parameter :: a      = 0.1502  ! Allometry constant for mass from diameter (kg[DM] cm-1)
+real, parameter :: b      = 2.476   ! Allometry constant for mass from diamter (-)
+real, parameter :: KS_def = 0.0288  ! Neutral CO2 concentraiton (g[Su] g[DM]-1)
 real, parameter :: n      = 4
 real, parameter :: alpha  = 2.0 * 0.0089 / 365.0
 real, parameter :: beta   = 2.0 * 0.329 / 365.0
