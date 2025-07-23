@@ -79,24 +79,23 @@ do kyr = 1700, 2100
 end do
 ! For diagostic of CO2.
 open (20,file='ca_it.txt',status='unknown')
-! '5' is default simulation with full mode.
-if (sim == 5) then
+if (sim == 5) then ! Full default model.
   open (21,file='o5.txt',status='unknown')
   calib_G = one
   calib_A = one
 endif
-if (sim == 6) then
+if (sim == 6) then ! Sc = KS
   open (21,file='o6.txt',status='unknown')
   calib_G = 0.4 / (2.0 * 0.329)
   calib_A = one
 end if
-if (sim == 7) then
+if (sim == 7) then ! Fixed CO2
   open (21,file='o7.txt',status='unknown')
   calib_G = one
   calib_A = one
   ca_it (:) = ca (1700)
 end if
-if (sim == 8) then
+if (sim == 8) then ! Source-driven growth
   open (21,file='o8.txt',status='unknown')
   calib_G = one
   calib_A = 1.36
